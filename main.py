@@ -4,9 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from dbmodels import Cafe, User
-from forms import Login, SignUp,NewSpot
+from forms import Login, SignUp, NewSpot
 from flask_bootstrap import Bootstrap
-
 
 app = Flask(__name__)
 ##Connect to Database
@@ -23,8 +22,6 @@ API_ENDPOINT = "https://serpapi.com/search.json"
 query = ""
 
 
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -38,7 +35,8 @@ def home():
         return render_template('index.html', cafes=cafes, city_to_search=city_to_search)
     return render_template("index.html", cafes=cafes)
 
-@app.route("/login", methods=["GET","POST"])
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
     form = Login()
     if request.method == "POST":
@@ -54,7 +52,8 @@ def login():
 
     return render_template("login.html", form=form)
 
-@app.route("/register", methods=["GET","POST"])
+
+@app.route("/register", methods=["GET", "POST"])
 def signup():
     form = SignUp()
 
@@ -92,7 +91,7 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route("/add-spot", methods=["GET","POST"])
+@app.route("/add-spot", methods=["GET", "POST"])
 @login_required
 def add_spot():
     form = NewSpot()
@@ -109,7 +108,8 @@ def add_spot():
 
         response = requests.get(API_ENDPOINT, params=params)
         data = response.json()
-        title = data["local_results"][0]["title"]
+        print(data)
+        title = data["place_results"]["title"]
         google_maps_url = data["search_metadata"]["google_maps_url"]
         img_url = form.img_url.data
         location = form.location.data
@@ -118,16 +118,17 @@ def add_spot():
         has_wifi = form.has_wifi.data
         has_sockets = form.has_sockets.data
         can_take_calls = form.can_take_calls.data
-        rating = data["local_results"][0]["rating"]
-        address = data["local_results"][0]["address"]
-        phone = data["local_results"][0]["phone"]
-        price = data["local_results"][0]["price"]
+
+        rating = data["place_results"]["rating"]
+        address = data["place_results"]["address"]
+        phone = data["place_results"]["phone"]
 
 
 
-        cafe = Cafe(name=title,map_url=google_maps_url,img_url=img_url,location=location,seats=seats,
-                    has_toilet=has_toilet,has_wifi=has_wifi,has_sockets=has_sockets,can_take_calls=can_take_calls,
-                    rating=rating,address=address,phone=phone,price=price)
+
+        cafe = Cafe(name=title, map_url=google_maps_url, img_url=img_url, location=location, seats=seats,
+                        has_toilet=has_toilet, has_wifi=has_wifi, has_sockets=has_sockets, can_take_calls=can_take_calls,
+                        rating=rating, address=address, phone=phone, price="")
         db.session.add(cafe)
         db.session.commit()
         return redirect(url_for('home'))
