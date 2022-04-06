@@ -96,7 +96,7 @@ def logout():
 def add_spot():
     form = NewSpot()
     formlogin = Login()
-    if request.method == "POST":
+    if request.method == "POST" and form.validate_on_submit():
         nameofspot = form.name.data
         city = form.name.data
         query = f"{nameofspot} {city}"
@@ -108,7 +108,6 @@ def add_spot():
 
         response = requests.get(API_ENDPOINT, params=params)
         data = response.json()
-        print(data)
 
         google_maps_url = data["search_metadata"]["google_maps_url"]
         img_url = form.img_url.data
@@ -118,6 +117,7 @@ def add_spot():
         has_wifi = form.has_wifi.data
         has_sockets = form.has_sockets.data
         can_take_calls = form.can_take_calls.data
+        coffee_price = form.coffee_price.data
         try:
             title = data["local_results"][0]["title"]
             rating = data["local_results"][0]["rating"]
@@ -135,7 +135,7 @@ def add_spot():
 
         cafe = Cafe(name=title, map_url=google_maps_url, img_url=img_url, location=location, seats=seats,
                         has_toilet=has_toilet, has_wifi=has_wifi, has_sockets=has_sockets, can_take_calls=can_take_calls,
-                        rating=rating, address=address, phone=phone, price=price)
+                        rating=rating, address=address, phone=phone, price=price, coffee_price=coffee_price)
         db.session.add(cafe)
         db.session.commit()
         return redirect(url_for('home'))
