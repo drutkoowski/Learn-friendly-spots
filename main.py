@@ -96,6 +96,7 @@ def logout():
 @login_required
 def add_spot():
     form = NewSpot()
+    formlogin = Login()
     if request.method == "POST":
         nameofspot = form.name.data
         city = form.name.data
@@ -134,7 +135,7 @@ def add_spot():
     if current_user.is_authenticated:
         return render_template("add.html", form=form)
     elif not current_user.is_authenticated:
-        return "<h1> you can not add spot, log in </h1>"
+        return render_template("login.html", form=formlogin)
 
 
 if __name__ == '__main__':
