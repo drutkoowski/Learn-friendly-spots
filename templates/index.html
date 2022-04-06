@@ -1,7 +1,9 @@
-{% include "header.html" %}
 
-<!-- Page Header -->
-<header class="masthead"
+{% extends 'base.html' %}
+{% block styles %}
+{{super()}}
+{% endblock %}
+{% block navheader %}<header class="masthead"
         style="background-image: url('https://funntaste.com/wp-content/uploads/2017/10/Feature-picture.png')">
     <div class="overlay"></div>
     <div class="container">
@@ -15,6 +17,9 @@
         </div>
     </div>
 </header>
+{% endblock %}
+{% block content %}
+
 
 <!-- Main Content -->
 <div class="container">
@@ -97,4 +102,4 @@
 </div>
 <hr>
 
-{% include "footer.html" %}
+{% endblock %}
