@@ -109,7 +109,7 @@ def add_spot():
         response = requests.get(API_ENDPOINT, params=params)
         data = response.json()
         print(data)
-        title = data["place_results"]["title"]
+
         google_maps_url = data["search_metadata"]["google_maps_url"]
         img_url = form.img_url.data
         location = form.location.data
@@ -118,17 +118,24 @@ def add_spot():
         has_wifi = form.has_wifi.data
         has_sockets = form.has_sockets.data
         can_take_calls = form.can_take_calls.data
+        try:
+            title = data["local_results"][0]["title"]
+            rating = data["local_results"][0]["rating"]
+            price = data["local_results"][0]["price"]
+            address = data["local_results"][0]["address"]
+            phone = data["local_results"][0]["phone"]
 
-        rating = data["place_results"]["rating"]
-        address = data["place_results"]["address"]
-        phone = data["place_results"]["phone"]
-
-
+        except KeyError:
+            title = data["place_results"]["title"]
+            rating = data["place_results"]["rating"]
+            address = data["place_results"]["address"]
+            phone = data["place_results"]["phone"]
+            price = data["place_results"]["price"]
 
 
         cafe = Cafe(name=title, map_url=google_maps_url, img_url=img_url, location=location, seats=seats,
                         has_toilet=has_toilet, has_wifi=has_wifi, has_sockets=has_sockets, can_take_calls=can_take_calls,
-                        rating=rating, address=address, phone=phone, price="")
+                        rating=rating, address=address, phone=phone, price=price)
         db.session.add(cafe)
         db.session.commit()
         return redirect(url_for('home'))
