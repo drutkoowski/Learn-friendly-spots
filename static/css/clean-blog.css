@@ -4,6 +4,8 @@
  * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-clean-blog/blob/master/LICENSE)
  */
 
+
+
 body {
   font-size: 20px;
   color: #212529;
@@ -47,6 +49,10 @@ blockquote {
   font-size: 36px;
   font-weight: 700;
   margin-top: 60px;
+}
+
+.cafe-name {
+   color: green!important;
 }
 
 .caption {

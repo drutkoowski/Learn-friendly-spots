@@ -1,43 +1,101 @@
 {% include "header.html" %}
 
-  <!-- Page Header -->
-  <header class="masthead" style="background-image: url('https://images.unsplash.com/photo-1470092306007-055b6797ca72?ixlib=rb-1.2.1&auto=format&fit=crop&w=668&q=80')">
+<!-- Page Header -->
+<header class="masthead"
+        style="background-image: url('https://funntaste.com/wp-content/uploads/2017/10/Feature-picture.png')">
     <div class="overlay"></div>
     <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <div class="site-heading">
-            <h1>Study friendly spots.</h1>
-            <span class="subheading">Share a place where it is worthwhile to stop and learn.</span>
-          </div>
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="site-heading">
+                    <h4>Find your study friendly spots in your location!</h4>
+                    <span class="subheading">Share a place where it is worthwhile to stop and learn.</span>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </header>
+</header>
 
-  <!-- Main Content -->
-  <div class="container">
+<!-- Main Content -->
+<div class="container">
+
     <div class="row">
-      <div class="col-lg-8 col-md-10 mx-auto">
-        {% for cafe in cafes %}
-        <div class="post-preview">
-          <a href="">
-            <h2 class="post-title">
-              {{cafe.name}}
-            </h2>
-            <h3 class="post-subtitle">
-              {{cafe.location}}
-            </h3>
-          </a>
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="post-preview mt-4">
+                 <form action="{{url_for('home')}}" method="POST">
+                    <div class="row cafe-name">
+
+                        <div class="col-sm-8">
+                                <div class="form-outline">
+                                    <input placeholder="Type your city name" name="city-search" type="search" id="form1" class="form-control"/>
+                                </div>
+                        </div>
+                        <div class="col-sm-4">
+                           <button class="btn btn-dark submit"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+
+
+            </div>
+
 
         </div>
-        {% endfor %}
-
-
-
-      </div>
     </div>
-  </div>
-  <hr>
+
+
+    <div class="row mt-4">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            {% if not city_to_search %}
+            {% for cafe in cafes %}
+            <div class="post-preview mt-4">
+                <a href="">
+                    <div class="row cafe-name">
+                        <div class="col-sm-8">
+                            <h2 class="post-title">
+                                {{cafe.name}}
+                            </h2>
+                        </div>
+                        <div class="col-sm-4">
+                            <img class="ml-auto" src="{{cafe.img_url}}" alt="Coffe Image"
+                                 style="max-height: 200px;width: 100px;height: 100px;border-radius: 50%;">
+                        </div>
+                    </div>
+
+                    <h3>{{cafe.location}}</h3>
+                </a>
+
+            </div>
+            {% endfor %}
+            {% elif city_to_search %}
+             {% for cafe in cafes %}
+            {% if cafe.location == city_to_search %}
+            <div class="post-preview mt-4">
+                <a href="">
+                    <div class="row cafe-name">
+                        <div class="col-sm-8">
+                            <h2 class="post-title">
+                                {{cafe.name}}
+                            </h2>
+                        </div>
+                        <div class="col-sm-4">
+                            <img class="ml-auto" src="{{cafe.img_url}}" alt="Coffe Image"
+                                 style="max-height: 200px;width: 100px;height: 100px;border-radius: 50%;">
+                        </div>
+                    </div>
+
+                    <h3>{{cafe.location}}</h3>
+                </a>
+
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+
+
+        </div>
+    </div>
+</div>
+<hr>
 
 {% include "footer.html" %}

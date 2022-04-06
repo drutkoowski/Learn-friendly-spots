@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import random
 from flask import jsonify
@@ -25,10 +25,15 @@ class Cafe(db.Model):
     coffee_price = db.Column(db.String(250), nullable=True)
 
 
-@app.route("/")
-def get_random_cafe():
+@app.route("/", methods=["GET","POST"])
+def home():
     cafes = db.session.query(Cafe).all()
+    if request.method == "POST":
+        city_to_search = request.form.get('city-search')
+        print(city_to_search)
+        return render_template('index.html', cafes=cafes, city_to_search=city_to_search)
     return render_template("index.html", cafes=cafes)
+
 
 
 
