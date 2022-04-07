@@ -1,8 +1,8 @@
 import requests
-from flask import Flask, jsonify, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
+from flask_login import login_user, LoginManager, login_required, current_user, logout_user
 from dbmodels import Cafe, User
 from forms import Login, SignUp, NewSpot
 from flask_bootstrap import Bootstrap
@@ -39,16 +39,20 @@ def home():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = Login()
-    if request.method == "POST":
+    if request.method == "POST" and form.validate_on_submit():
         email = form.email.data
         password = form.password.data
         user = User.query.filter_by(email=email).first()
+        print(user)
         if user:
             if check_password_hash(user.password, password):
+                msg = flash(f'Nice to see you again {user.name}!', category="info")
                 login_user(user)
-                return redirect(url_for('home'))
-        if not user:
-            return render_template("register.html", form=form)
+                print(current_user.email)
+                return redirect(url_for('home', flash=msg))
+        if not user or not check_password_hash(user.password, password):
+            flash('Account with these credentials can not be found.', category="warning")
+            return render_template("login.html", form=form)
 
     return render_template("login.html", form=form)
 
@@ -63,10 +67,11 @@ def signup():
         email = form.email.data
         password = form.password.data
         user = User.query.filter_by(email=email).first()
-        if user:
+        name = User.query.filter_by(name=name).first()
+        if user or name:
+            flash(f'User with these credentials already exists!', category="info")
             return render_template("register.html", form=form)
         else:
-            print("elo")
             hash_and_salted_password = generate_password_hash(
                 password,
                 method='pbkdf2:sha256',
@@ -80,6 +85,7 @@ def signup():
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user)
+            flash(f'Welcome on board {name}!', category="info")
             return redirect(url_for('home'))
 
     return render_template("register.html", form=form)
@@ -87,12 +93,13 @@ def signup():
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout():
+    user = current_user
+    flash(f'{user.name} Logged out successfully!', category="info")
     logout_user()
     return redirect(url_for('home'))
 
 
 @app.route("/add-spot", methods=["GET", "POST"])
-@login_required
 def add_spot():
     form = NewSpot()
     formlogin = Login()
@@ -117,7 +124,7 @@ def add_spot():
         has_wifi = form.has_wifi.data
         has_sockets = form.has_sockets.data
         can_take_calls = form.can_take_calls.data
-        coffee_price = form.coffee_price.data
+        coffee_price = str(form.coffee_price.data)
         try:
             title = data["local_results"][0]["title"]
             rating = data["local_results"][0]["rating"]
@@ -126,11 +133,16 @@ def add_spot():
             phone = data["local_results"][0]["phone"]
 
         except KeyError:
-            title = data["place_results"]["title"]
-            rating = data["place_results"]["rating"]
-            address = data["place_results"]["address"]
-            phone = data["place_results"]["phone"]
-            price = data["place_results"]["price"]
+            try:
+                title = data["place_results"]["title"]
+                rating = data["place_results"]["rating"]
+                address = data["place_results"]["address"]
+                phone = data["place_results"]["phone"]
+                price = data["place_results"]["price"]
+            except:
+                flash('We could not add your Cafe to our database, please refine the invocation!', category="warning")
+                return render_template("add.html", form=form)
+
 
 
         cafe = Cafe(name=title, map_url=google_maps_url, img_url=img_url, location=location, seats=seats,
@@ -138,12 +150,14 @@ def add_spot():
                         rating=rating, address=address, phone=phone, price=price, coffee_price=coffee_price)
         db.session.add(cafe)
         db.session.commit()
+        flash('Cafe added successfully!', category="info")
         return redirect(url_for('home'))
 
     if current_user.is_authenticated:
         return render_template("add.html", form=form)
     elif not current_user.is_authenticated:
-        return render_template("login.html", form=formlogin)
+        flash('You need to sign in to add a new spot!', category="info")
+        return redirect(url_for('login'))
 
 
 if __name__ == '__main__':
