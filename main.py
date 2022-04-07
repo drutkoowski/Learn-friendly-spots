@@ -67,8 +67,8 @@ def signup():
         email = form.email.data
         password = form.password.data
         user = User.query.filter_by(email=email).first()
-        name = User.query.filter_by(name=name).first()
-        if user or name:
+        is_name = User.query.filter_by(name=name).first()
+        if user or is_name:
             flash(f'User with these credentials already exists!', category="info")
             return render_template("register.html", form=form)
         else:
