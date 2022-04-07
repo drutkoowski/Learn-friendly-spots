@@ -42,14 +42,12 @@
                  <form action="{{url_for('home')}}" method="POST">
                     <div class="row cafe-name">
 
-                        <div class="col-sm-8">
-                                <div class="form-outline">
-                                    <input placeholder="Type your city name" name="city-search" type="search" id="form1" class="form-control"/>
-                                </div>
-                        </div>
-                        <div class="col-sm-4">
-                           <button class="btn btn-dark submit"><i class="fa fa-search"></i></button>
-                        </div>
+                           <div class="input-group mb-3">
+                              <input name="city-search" type="text" class="form-control" style="height: 120%" placeholder="Type your city name" aria-label="Recipient's username" aria-describedby="button-addon2">
+                              <div class="input-group-append">
+                                <button class="ml-1 btn btn-outline-secondary btn-dark text-light" type="submit" id="button-addon2">Search</button>
+                              </div>
+                            </div>
                     </div>
                 </form>
 
@@ -73,13 +71,13 @@
                             <h2 class="post-title">
                                 {{cafe.name}} {{cafe.rating}}&#11088;
                             </h2>
-                             {% if current_user.email == "damian@test.pl" %}
-                            <a href="{{url_for('delete',id=cafe.id)}}">&#x2716;</a>
+                             {% if current_user.email == "admin@test.pl" %}
+                            <a href="{{url_for('delete_cafe', cafe_id=cafe.id)}}">Delete Cafe &#x2716;</a>
                             {% endif %}
                         </div>
                         <div class="col-sm-4">
                             <img class="ml-auto" src="{{cafe.img_url}}" alt="Coffe Image"
-                                 style="max-height: 200px;width: 100px;height: 100px;border-radius: 50%;">
+                                 style="max-height: 200px;width: 150px;height: 130px;border-radius: 50%;">
                         </div>
                     </div>
 
@@ -107,16 +105,16 @@
                     <div class="row cafe-name">
                         <div class="col-sm-8">
                             <h2 class="post-title">
-                                {{cafe.name}}{{cafe.rating}}&#11088;
+                                {{cafe.name}} {{cafe.rating}}&#11088;
 
                             </h2>
-                            {% if current_user.email == 'admin@test.pl' %}
-                            <a href="{{url_for('delete',id=cafe.id)}}">&#x2716;</a>
+                             {% if current_user.email == "admin@test.pl" %}
+                            <a href="{{url_for('delete_cafe', cafe_id=cafe.id)}}">Delete Cafe &#x2716;</a>
                             {% endif %}
                         </div>
                         <div class="col-sm-4">
                             <img class="ml-auto" src="{{cafe.img_url}}" alt="Coffe Image"
-                                 style="max-height: 200px;width: 100px;height: 100px;border-radius: 50%;">
+                                 style="max-height: 200px;width: 150px;height: 130px;border-radius: 50%;">
                         </div>
                     </div>
                     <h3>City: {{cafe.location}}</h3>

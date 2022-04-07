@@ -27,6 +27,15 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+@app.route("/delete/<int:cafe_id>")
+def delete_cafe(cafe_id):
+    # post_to_delete = Cafe.query.get(cafe_id)
+    # db.session.delete(post_to_delete)
+    # db.session.commit()
+    return redirect(url_for('home'))
+
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     cafes = db.session.query(Cafe).all()
@@ -43,12 +52,10 @@ def login():
         email = form.email.data
         password = form.password.data
         user = User.query.filter_by(email=email).first()
-        print(user)
         if user:
             if check_password_hash(user.password, password):
                 msg = flash(f'Nice to see you again {user.name}!', category="info")
                 login_user(user)
-                print(current_user.email)
                 return redirect(url_for('home', flash=msg))
         if not user or not check_password_hash(user.password, password):
             flash('Account with these credentials can not be found.', category="warning")
@@ -143,13 +150,12 @@ def add_spot():
                 flash('We could not add your Cafe to our database, please refine the invocation!', category="warning")
                 return render_template("add.html", form=form)
 
-
-
         cafe = Cafe(name=title, map_url=google_maps_url, img_url=img_url, location=location, seats=seats,
-                        has_toilet=has_toilet, has_wifi=has_wifi, has_sockets=has_sockets, can_take_calls=can_take_calls,
-                        rating=rating, address=address, phone=phone, price=price, coffee_price=coffee_price)
-        db.session.add(cafe)
-        db.session.commit()
+                    has_toilet=has_toilet, has_wifi=has_wifi, has_sockets=has_sockets, can_take_calls=can_take_calls,
+                    rating=rating, address=address, phone=phone, price=price, coffee_price=coffee_price)
+        if cafe:
+            db.session.add(cafe)
+            db.session.commit()
         flash('Cafe added successfully!', category="info")
         return redirect(url_for('home'))
 
