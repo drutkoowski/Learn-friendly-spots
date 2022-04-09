@@ -1,3 +1,3 @@
 Hosted at:
 https://study-friendly-spots.herokuapp.com
-Created using Flask and SQLAlchemy, Bootstrap and web-scrapping/API
+Created using Flask and SQLAlchemy, WTF Forms, Bootstrap and web-scrapping/API
